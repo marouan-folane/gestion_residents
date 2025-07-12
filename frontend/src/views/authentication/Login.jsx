@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 
-import axios from "axios";
 import axiosClient from "../../axios-client";
 import { useStateContext } from "../../contexts/ContextProvider";
 
