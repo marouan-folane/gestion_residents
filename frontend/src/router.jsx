@@ -5,25 +5,17 @@ import NotFound from "./views/NotFound";
 import DefaultLayout from "./components/DefaultLayout";
 import GuestLayout from "./components/GuestLayout";
 import Dashboard from "./views/Dashboard";
+import SyndicateHomePage from "./components/Home";
 
 const router = createBrowserRouter([
-  // DefaultLayout
   {
     path: "/",
-    element: <DefaultLayout />,
-    children: [
-      {
-        path:"/dashboard",
-        element: <Dashboard/>
-      },
-    ],
-  },
-  
-  // GuestLayout
-  {
-    path: "/auth",
     element: <GuestLayout />,
     children: [
+      {
+        path: "/", 
+        element: <SyndicateHomePage />,
+      },
       {
         path: "/auth/login",
         element: <Login />,
@@ -32,10 +24,21 @@ const router = createBrowserRouter([
         path: "/auth/register",
         element: <Register />,
       },
-      
     ],
   },
-  
+
+  {
+    path: "/dashboard",
+    element: <DefaultLayout />,
+    children: [
+      {
+        path: "/dashboard",
+        element: <Dashboard />,
+      },
+
+    ],
+  },
+
   {
     path: "*",
     element: <NotFound />,
