@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 import axiosClient from "../../axios-client";
 import { useStateContext } from "../../contexts/ContextProvider";
-
+import { useNavigate } from "react-router-dom";
 const Login = () => {
     const { setUser, setToken, setNotification, notification } = useStateContext();
     const [error, setError] = useState(null);
@@ -17,6 +17,7 @@ const Login = () => {
         rememberMe: false,
         agreeToTerms: false,
     });
+    const Navigate=useNavigate();
 
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -163,6 +164,7 @@ const Login = () => {
                         >
                             Register
                         </button>
+
                     </div>
 
                     {/* Form */}
@@ -315,6 +317,11 @@ const Login = () => {
                             className="w-full bg-teal-500 text-white py-3 px-4 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl hover:bg-teal-600 border-2 border-teal-500 hover:border-teal-600 transform hover:-translate-y-1"
                         >
                             {isLogin ? "Login" : "Create Account"}
+                        </button>
+                           <button onClick={()=>{Navigate(-1)}}
+                            className="w-full bg-red-500 text-white py-3 px-4 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl  border-2 border-red-500 hover:border-red-600 transform hover:-translate-y-1"
+>
+                            GO Back
                         </button>
                     </div>
 
