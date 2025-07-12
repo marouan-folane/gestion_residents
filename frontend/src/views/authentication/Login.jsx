@@ -5,7 +5,7 @@ import axiosClient from "../../axios-client";
 import { useStateContext } from "../../contexts/ContextProvider";
 
 const Login = () => {
-    const { setUser, setToken } = useStateContext();
+    const { setUser, setToken, setNotification, notification } = useStateContext();
     const [error, setError] = useState(null);
     const [isLogin, setIsLogin] = useState(true);
     const [formData, setFormData] = useState({
@@ -40,6 +40,8 @@ const Login = () => {
                         console.log("Login successful:", response.data);
                         setToken(response.data.token);
                         setUser(response.data.user);
+                        setNotification("Login successful!"); // Set notification
+
                     })
                     .catch((error) => {
                         console.error("Login error:", error);
@@ -66,6 +68,8 @@ const Login = () => {
                         console.log("Registration successful:", response.data);
                         setToken(response.data.token);
                         setUser(response.data.user);
+                        setNotification("Account created successfully!"); // Set notification
+
                     })
                     .catch((error) => {
                         console.error("Registration error:", error);

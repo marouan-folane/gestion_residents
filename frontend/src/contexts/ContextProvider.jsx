@@ -38,7 +38,7 @@ export const ContexteProvider = ({ children }) => {
     _setNotification(message);
     setTimeout(()=>{
       _setNotification('');
-    }, 5000);
+    }, 2000);
   }
 
   const setToken = (token) => {
