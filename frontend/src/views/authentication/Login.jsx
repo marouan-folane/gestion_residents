@@ -139,7 +139,6 @@ const Login = () => {
                         Dashboard
                     </h1>
                 </div>
-
                 {/* Auth Container */}
                 <div className="bg-white rounded-xl p-8 border-2 border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
                     {/* Toggle Buttons */}
@@ -164,8 +163,27 @@ const Login = () => {
                         >
                             Register
                         </button>
-
                     </div>
+
+                    {/* Error Message */}
+                    {error && (
+                        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+                            <div className="flex items-center">
+                                <svg className="w-5 h-5 text-red-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <span className="text-red-700 text-sm font-medium">{error}</span>
+                                <button
+                                    onClick={() => setError(null)}
+                                    className="ml-auto text-red-500 hover:text-red-700"
+                                >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    )}
 
                     {/* Form */}
                     <div className="space-y-4">
@@ -317,11 +335,6 @@ const Login = () => {
                             className="w-full bg-teal-500 text-white py-3 px-4 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl hover:bg-teal-600 border-2 border-teal-500 hover:border-teal-600 transform hover:-translate-y-1"
                         >
                             {isLogin ? "Login" : "Create Account"}
-                        </button>
-                           <button onClick={()=>{Navigate(-1)}}
-                            className="w-full bg-red-500 text-white py-3 px-4 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl  border-2 border-red-500 hover:border-red-600 transform hover:-translate-y-1"
->
-                            GO Back
                         </button>
                     </div>
 
