@@ -6,6 +6,7 @@ import DefaultLayout from "./components/DefaultLayout";
 import GuestLayout from "./components/GuestLayout";
 import Dashboard from "./views/Dashboard";
 import SyndicateHomePage from "./components/Home";
+import ImmeubleCheck from "./views/Immeuble";
 
 const router = createBrowserRouter([
   {
@@ -13,7 +14,7 @@ const router = createBrowserRouter([
     element: <GuestLayout />,
     children: [
       {
-        path: "/", 
+        path: "/",
         element: <SyndicateHomePage />,
       },
       {
@@ -28,18 +29,21 @@ const router = createBrowserRouter([
   },
 
   {
-    path: "/dashboard",
+    path: "/",
     element: <DefaultLayout />,
     children: [
       {
         path: "/dashboard",
         element: <Dashboard />,
-      },
+      },{
+        path: "/immeubleform",
+        element: <ImmeubleCheck />,
+      }
 
     ],
-  },
+  },{
 
-  {
+  },{
     path: "*",
     element: <NotFound />,
   },
