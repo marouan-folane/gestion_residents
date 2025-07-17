@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\ImmeubleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,11 +19,14 @@ use App\Http\Controllers\Api\AuthController;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-Route::post('/login', [AuthController::class, 'login']);
-Route::post('/register', [AuthController::class, 'register']);
-Route::middleware("auth")->group(function(){
-  Route::get("/home",function(){
-       return view("");
-  });
+
+Route::middleware('auth:sanctum')->group(function () {
+    // Route::apiResource('immeubles', ImmeubleController::class);
+
+    Route::get('/immeubles', [ImmeubleController::class, 'index']);
+    Route::post('/immeubles', [ImmeubleController::class, 'store']);
+    Route::post('/logout',[AuthController::class,"logout"]);
 });
-    
+
+ Route::post('/login', [AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register']);

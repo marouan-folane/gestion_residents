@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-
 import axiosClient from "../../axios-client";
 import { useStateContext } from "../../contexts/ContextProvider";
 import { useNavigate } from "react-router-dom";
+
 const Login = () => {
-    const { setUser, setToken, setNotification, notification } = useStateContext();
+    const { setUser, setToken, setNotification } = useStateContext();
     const [error, setError] = useState(null);
     const [isLogin, setIsLogin] = useState(true);
     const [formData, setFormData] = useState({
@@ -13,11 +13,10 @@ const Login = () => {
         email: "",
         password: "",
         confirmPassword: "",
-        role: "syndic",
         rememberMe: false,
         agreeToTerms: false,
     });
-    const Navigate=useNavigate();
+    const navigate = useNavigate();
 
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -28,69 +27,65 @@ const Login = () => {
     };
 
     const handleSubmit = () => {
-        const statut = isLogin ? true : false;
-        switch (statut) {
-            case true: {
-                axiosClient
-                    .post("/login", {
-                        email: formData.email,
-                        password: formData.password,
-                    })
-                    .then((response) => {
-                        console.log("Login successful:", response.data);
-                        setToken(response.data.token);
-                        setUser(response.data.user);
-                        setNotification("Login successful!"); // Set notification
-
-                    })
-                    .catch((error) => {
-                        console.error("Login error:", error);
-                        setError(
-                            "Login failed. Please check your credentials."
-                        );
-                    });
-                break;
+        if (!isLogin) {
+            if (formData.password !== formData.confirmPassword) {
+                setError("Passwords do not match.");
+                return;
             }
+            if (!formData.agreeToTerms) {
+                setError("You must agree to the Terms of Service.");
+                return;
+            }
+        }
 
-            case false: {
-                const payload = {
-                    name: formData.fullName,
-                    phone: formData.phone,
+        if (isLogin) {
+            axiosClient
+                .post("/login", {
                     email: formData.email,
                     password: formData.password,
-                    role: "syndic",
-                };
-                  console.log("Form Data:", payload);
-
-                axiosClient
-                    .post("/register", payload)
-                    .then((response) => {
-                        console.log("Registration successful:", response.data);
-                        setToken(response.data.token);
-                        setUser(response.data.user);
-                        setNotification("Account created successfully!"); // Set notification
-
-                    })
-                    .catch((error) => {
-                        console.error("Registration error:", error);
-                        setError(
-                            "Registration failed. Please check your details."
-                        );
-                    });
-                break;
-            }
+                })
+                .then((response) => {
+                    setToken(response.data.token);
+                    setUser(response.data.user);
+                    setNotification("Login successful!");
+                    window.location.href = "/immeubleform";
+                })
+                .catch(() => {
+                    setError("Login failed. Please check your credentials.");
+                });
+        } else {
+            const payload = {
+                name: formData.fullName,
+                phone: formData.phone,
+                email: formData.email,
+                password: formData.password,
+                role: "syndic",
+            };
+            axiosClient
+                .post("/register", payload)
+                .then((response) => {
+                    setToken(response.data.token);
+                    setUser(response.data.user);
+                    setNotification("Account created successfully!");
+                    window.location.href = "/immeubleform";
+                })
+                .catch(() => {
+                    setError("Registration failed. Please check your details.");
+                });
         }
     };
 
     const resetForm = () => {
         setFormData({
             fullName: "",
+            phone: "",
             email: "",
             password: "",
             confirmPassword: "",
             rememberMe: false,
             agreeToTerms: false,
         });
+        setError(null);
     };
 
     const switchMode = (loginMode) => {
@@ -169,16 +164,38 @@ const Login = () => {
                     {error && (
                         <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
                             <div className="flex items-center">
-                                <svg className="w-5 h-5 text-red-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                <svg
+                                    className="w-5 h-5 text-red-500 mr-2"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth="2"
+                                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                    />
                                 </svg>
-                                <span className="text-red-700 text-sm font-medium">{error}</span>
+                                <span className="text-red-700 text-sm font-medium">
+                                    {error}
+                                </span>
                                 <button
                                     onClick={() => setError(null)}
                                     className="ml-auto text-red-500 hover:text-red-700"
                                 >
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                    <svg
+                                        className="w-4 h-4"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth="2"
+                                            d="M6 18L18 6M6 6l12 12"
+                                        />
                                     </svg>
                                 </button>
                             </div>
@@ -204,7 +221,6 @@ const Login = () => {
                                         required={!isLogin}
                                     />
                                 </div>
-
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
                                         Phone Number
@@ -336,6 +352,15 @@ const Login = () => {
                         >
                             {isLogin ? "Login" : "Create Account"}
                         </button>
+
+                        <button
+                            onClick={() => {
+                                navigate(-1);
+                            }}
+                            className="w-full bg-red-500 text-white py-3 px-4 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl border-2 border-red-500 hover:border-red-600 transform hover:-translate-y-1 mt-2"
+                        >
+                            GO Back
+                        </button>
                     </div>
 
                     {/* Social Login */}
@@ -385,7 +410,6 @@ const Login = () => {
                         </div>
                     </div>
                 </div>
-
                 {/* Footer */}
                 <div className="text-center mt-6 text-sm text-gray-500">
                     <p>© 2024 Dashboard. All rights reserved.</p>
