@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Users, Euro, Receipt, AlertTriangle, TrendingUp, Calendar } from 'lucide-react';
+import { Users, Euro, Receipt, AlertTriangle, TrendingUp, Calendar, Home, Building, CreditCard, FileText, Settings } from 'lucide-react';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Link, useNavigate } from 'react-router-dom';
 import axiosC from '../axios-client';
@@ -8,25 +8,37 @@ import { useStateContext } from '../contexts/ContextProvider';
 
 const Dashboard = () => {
   const [syndicatData, setSyndicatData] = useState(null);
-  const navigate=useNavigate();
-      const {token}=useStateContext();
+  const [error, setError] = useState(null);
+  const [dashboardData, setDashboardData] = useState({
+    apartments: [],
+    owners: [],
+    finances: [],
+    payments: [],
+    maintenance: [],
+    notifications: []
+  });
+
+  const navigate = useNavigate();
+  const { token } = useStateContext();
 
   useEffect(() => {
     const fetchImmeubles = async () => {
       try {
         const response = await axiosC.get('/immeubles', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
 
         const immeubles = response.data;
 
         if (!immeubles || immeubles.length === 0) {
           navigate('/immeubleform');
-          setSyndicatData(immeubles[0]);         }
-      } catch (error) {
-        console.error('Erreur lors du chargement des immeubles :', error);
+        } else {
+          setSyndicatData(immeubles[0]);
+          fetchDashboardData(); // charger le reste des données après immeuble
+        }
+      } catch (e) {
+        console.error('Erreur lors du chargement des immeubles :', e);
+        setError("Impossible de charger les données de l'immeuble.");
         navigate('/immeubleform');
       }
     };
@@ -34,14 +46,8 @@ const Dashboard = () => {
     fetchImmeubles();
   }, [navigate, token]);
 
-  const stats = [
-    { name: 'Locataires', value: '24', icon: Users, color: 'bg-blue-500', change: '+2' },
-    { name: 'Paiements ce mois', value: '18,450€', icon: Euro, color: 'bg-green-500', change: '+5.2%' },
-    { name: 'Charges totales', value: '3,200€', icon: Receipt, color: 'bg-orange-500', change: '-2.1%' },
-    { name: 'Plaintes', value: '3', icon: AlertTriangle, color: 'bg-red-500', change: '-1' },
   const fetchDashboardData = async () => {
     try {
-      // Fetch all dashboard related data
       const [
         apartmentsRes,
         ownersRes,
@@ -50,12 +56,12 @@ const Dashboard = () => {
         maintenanceRes,
         notificationsRes
       ] = await Promise.all([
-        axiosClient.get("/apartments").catch(() => ({ data: [] })),
-        axiosClient.get("/owners").catch(() => ({ data: [] })),
-        axiosClient.get("/finances").catch(() => ({ data: [] })),
-        axiosClient.get("/payments").catch(() => ({ data: [] })),
-        axiosClient.get("/maintenance").catch(() => ({ data: [] })),
-        axiosClient.get("/notifications").catch(() => ({ data: [] }))
+        axiosC.get("/apartments").catch(() => ({ data: [] })),
+        axiosC.get("/owners").catch(() => ({ data: [] })),
+        axiosC.get("/finances").catch(() => ({ data: [] })),
+        axiosC.get("/payments").catch(() => ({ data: [] })),
+        axiosC.get("/maintenance").catch(() => ({ data: [] })),
+        axiosC.get("/notifications").catch(() => ({ data: [] }))
       ]);
 
       setDashboardData({
@@ -67,21 +73,21 @@ const Dashboard = () => {
         notifications: notificationsRes.data
       });
     } catch (err) {
-      console.error('Error fetching dashboard data:', err);
+      console.error('Erreur lors du chargement du tableau de bord :', err);
+      setError("Erreur lors du chargement des données du tableau de bord.");
     }
   };
 
   const handleLogout = async () => {
     try {
-      await axiosClient.post('/logout');
+      await axiosC.post('/logout');
     } catch (err) {
-      console.error('Logout error:', err);
+      console.error('Erreur de déconnexion :', err);
     } finally {
       localStorage.removeItem('ACCESS_TOKEN');
       window.location.href = "/auth/login";
     }
   };
-
 
   if (error) {
     return (
@@ -99,14 +105,11 @@ const Dashboard = () => {
     );
   }
 
-  // Sidebar menu items
-  const menuItems = [
-    { icon: Home, label: 'Tableau de bord', active: true, color: 'bg-blue-500' },
-    { icon: Building, label: 'Appartements', count: dashboardData.apartments.length, color: 'bg-purple-500' },
-    { icon: Users, label: 'Propriétaires', count: dashboardData.owners.length, color: 'bg-green-500' },
-    { icon: CreditCard, label: 'Finances', count: dashboardData.payments.length, color: 'bg-yellow-500' },
-    { icon: FileText, label: 'Documents', color: 'bg-indigo-500' },
-    { icon: Settings, label: 'Paramètres', color: 'bg-gray-500' },
+  const stats = [
+    { name: 'Locataires', value: '24', icon: Users, color: 'bg-blue-500', change: '+2' },
+    { name: 'Paiements ce mois', value: '18,450€', icon: Euro, color: 'bg-green-500', change: '+5.2%' },
+    { name: 'Charges totales', value: '3,200€', icon: Receipt, color: 'bg-orange-500', change: '-2.1%' },
+    { name: 'Plaintes', value: '3', icon: AlertTriangle, color: 'bg-red-500', change: '-1' },
   ];
 
   const paymentsData = [
@@ -159,15 +162,15 @@ const Dashboard = () => {
           <Calendar className="w-4 h-4" />
           <span>{new Date().toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
         </div>
-        <button className='bg-green-700 text-white py-3 px-6 rounded rounded-circle'>
-            <Link to={"/paiments"}> Your  paiment</Link>
+        <button className='bg-green-700 text-white py-3 px-6 rounded-full'>
+          <Link to={"/paiments"}>Votre paiement</Link>
         </button>
-        <button className='bg-red-700 text-white py-3 px-6 rounded rounded-circle'>
-            <Link to={"/Locataires"}> Locataires</Link>
+        <button className='bg-red-700 text-white py-3 px-6 rounded-full'>
+          <Link to={"/Locataires"}>Locataires</Link>
         </button>
       </div>
 
-      {/* Stats Cards */}
+      {/* Statistiques */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, index) => {
           const Icon = stat.icon;
@@ -236,9 +239,9 @@ const Dashboard = () => {
         </motion.div>
       </div>
 
-      {/* Recent Activities */}
+      {/* Activités récentes */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Recent Payments */}
+        {/* Paiements récents */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -266,7 +269,7 @@ const Dashboard = () => {
           </div>
         </motion.div>
 
-        {/* Recent Charges */}
+        {/* Charges récentes */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -290,7 +293,7 @@ const Dashboard = () => {
           </div>
         </motion.div>
 
-        {/* Recent Interventions */}
+        {/* Interventions */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
