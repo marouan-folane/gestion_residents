@@ -10,14 +10,17 @@ import CreateImmeuble from "./views/CreateImmeuble";
 import CheckImmeuble from "./views/CheckImmeuble";
 
 const router = createBrowserRouter([
+    
+    {        
+        path: "/",
+        element: <SyndicateHomePage />,      
+    },
+
     {
         path: "/",
         element: <GuestLayout />,
         children: [
-            {
-                path: "/",
-                element: <SyndicateHomePage />,
-            },
+           
             {
                 path: "/auth/login",
                 element: <Login />,

@@ -26,7 +26,6 @@ export default function SyndicateLandingPage() {
     const [labelAuth, setLabelAuth] = useState('Connexion');
 
     useEffect(()=>{
-      
         if(token){
             setDestination('/dashboard');
             setLabelAuth('Tableau de bord');
@@ -34,10 +33,8 @@ export default function SyndicateLandingPage() {
             setDestination('/auth/login');
             setLabelAuth('Connexion');
         }
-
     },[token]);
 
-    const navigate=useNavigate();
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       {/* Header */}

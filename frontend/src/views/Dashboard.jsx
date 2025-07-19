@@ -43,40 +43,6 @@ const Dashboard = () => {
     notifications: []
   });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [immeubleResponse, userResponse] = await Promise.all([
-          axiosClient.get("/immeubles"),
-          axiosClient.get("/user"),
-        ]);
-
-        if (immeubleResponse.data.length === 0) {
-          navigate('/immeubleform');
-          return;
-        }
-
-        setImmeuble(immeubleResponse.data[0]);
-        setUser(userResponse.data);
-
-        // Fetch additional dashboard data
-        await fetchDashboardData();
-
-      } catch (err) {
-        console.error('Error fetching data:', err);
-        if (err.response?.status === 401) {
-          navigate('/auth/login');
-        } else {
-          setError('Erreur lors du chargement des données');
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [navigate]);
-
   const fetchDashboardData = async () => {
     try {
       // Fetch all dashboard related data
@@ -119,10 +85,6 @@ const Dashboard = () => {
       window.location.href = "/auth/login";
     }
   };
-
-  if (loading) {
-    return <LoadingSpinner message="Chargement du tableau de bord..." />;
-  }
 
 
   if (error) {

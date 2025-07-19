@@ -19,15 +19,7 @@ const Login = () => {
     const [fieldErrors, setFieldErrors] = useState({});
     const navigate = useNavigate();
 
-
-    useEffect(() => {
-        if (token) {
-            navigate("/immeuble-check");
-            return;
-        }
-    }, [token]);
-
-
+  
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
         setFormData((prev) => ({
@@ -49,7 +41,9 @@ const Login = () => {
                     setToken(response.data.token);
                     setUser(response.data.user);
                     setNotification("Login successful!");
-                    navigate("/immeuble-check");
+                    // navigate("/immeuble-check");
+                    window.location.reload();
+
                 })
                 .catch((err) => {
                     if (err.response && err.response.data) {
@@ -99,7 +93,9 @@ const Login = () => {
                     setToken(response.data.token);
                     setUser(response.data.user);
                     setNotification("Account created successfully!");
-                    navigate("/immeuble-check");
+                    // navigate("/immeuble-check");
+                    window.location.reload();
+
                 })
                 .catch((err) => {
                     if (err.response && err.response.data) {
@@ -125,6 +121,7 @@ const Login = () => {
                     }
                 });
         }
+
     };
 
     const resetForm = () => {
