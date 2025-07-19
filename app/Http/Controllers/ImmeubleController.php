@@ -17,8 +17,9 @@ class ImmeubleController extends Controller
 public function index()
 {
     $user = Auth::user();
+    $syndicId = $user->syndic->id;
 
-    $immeuble = Immeuble::where('syndic_id', $user->id)->first();
+    $immeuble = Immeuble::where('syndic_id', $syndicId)->first();
 
     if ($immeuble) {
         return response()->json([$immeuble]);
@@ -36,8 +37,11 @@ public function index()
             'name' => 'required|string',
             'address' => 'required|string',
         ]);
+        
         $user=Auth::user();
-        $validated['syndic_id'] = $user->id;
+        $syndicId = $user->syndic->id;
+
+        $validated['syndic_id'] = $syndicId;
 
         $immeuble = Immeuble::create($validated);
 

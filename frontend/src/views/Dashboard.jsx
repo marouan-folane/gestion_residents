@@ -1,18 +1,38 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { Users, Euro, Receipt, AlertTriangle, TrendingUp, Calendar } from 'lucide-react';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Link, useNavigate } from 'react-router-dom';
+import axiosC from '../axios-client';
+import { motion } from 'framer-motion';
+import { useStateContext } from '../contexts/ContextProvider';
 
 const Dashboard = () => {
   const [syndicatData, setSyndicatData] = useState(null);
   const navigate=useNavigate();
+      const {token}=useStateContext();
+
   useEffect(() => {
-    const data = localStorage.getItem('syndicatData');
-    if (data) {
-      setSyndicatData(JSON.parse(data));
-    }
-  }, []);
+    const fetchImmeubles = async () => {
+      try {
+        const response = await axiosC.get('/immeubles', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const immeubles = response.data;
+
+        if (!immeubles || immeubles.length === 0) {
+          navigate('/immeubleform');
+          setSyndicatData(immeubles[0]);         }
+      } catch (error) {
+        console.error('Erreur lors du chargement des immeubles :', error);
+        navigate('/immeubleform');
+      }
+    };
+
+    fetchImmeubles();
+  }, [navigate, token]);
 
   const stats = [
     { name: 'Locataires', value: '24', icon: Users, color: 'bg-blue-500', change: '+2' },

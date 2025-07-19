@@ -14,9 +14,29 @@ import {
   ArrowRight,
   Menu,
 } from "lucide-react"
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
+import { useStateContext } from "../contexts/ContextProvider";
+import { useEffect, useState } from "react";
 
 export default function SyndicateLandingPage() {
+
+  
+    const {token} = useStateContext();
+    const [destination, setDestination] = useState('/auth/login'); 
+    const [labelAuth, setLabelAuth] = useState('Connexion');
+
+    useEffect(()=>{
+      
+        if(token){
+            setDestination('/dashboard');
+            setLabelAuth('Tableau de bord');
+        } else {
+            setDestination('/auth/login');
+            setLabelAuth('Connexion');
+        }
+
+    },[token]);
+
     const navigate=useNavigate();
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
@@ -48,9 +68,11 @@ export default function SyndicateLandingPage() {
                 Contact
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
               </a>
-               <a href={navigate('/auth/login')} >
-                Connexion
-              </a>
+               <Link to={destination}  
+               className="text-slate-600 hover:text-blue-600 transition-all duration-300 relative group"
+              >
+                {labelAuth}
+              </Link>
             </nav>
 
             <div className="flex items-center space-x-4">
