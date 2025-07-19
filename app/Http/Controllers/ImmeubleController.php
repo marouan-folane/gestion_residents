@@ -41,7 +41,6 @@ public function index()
         $user=Auth::user();
         $syndicId = $user->syndic->id;
 
-
         $validated['syndic_id'] = $syndicId;
 
         $immeuble = Immeuble::create($validated);

@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axiosClient from "../../axios-client";
 import { useStateContext } from "../../contexts/ContextProvider";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-    const { setUser, setToken, setNotification } = useStateContext();
-    const [error, setError] = useState(null);
+    const { setUser, setToken, setNotification, token } = useStateContext();
+
     const [isLogin, setIsLogin] = useState(true);
     const [formData, setFormData] = useState({
         fullName: "",
@@ -16,7 +16,17 @@ const Login = () => {
         rememberMe: false,
         agreeToTerms: false,
     });
+    const [fieldErrors, setFieldErrors] = useState({});
     const navigate = useNavigate();
+
+
+    useEffect(() => {
+        if (token) {
+            navigate("/immeuble-check");
+            return;
+        }
+    }, [token]);
+
 
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -27,7 +37,8 @@ const Login = () => {
     };
 
     const handleSubmit = () => {
-  
+        setFieldErrors({}); // Reset errors
+
         if (isLogin) {
             axiosClient
                 .post("/login", {
@@ -38,19 +49,40 @@ const Login = () => {
                     setToken(response.data.token);
                     setUser(response.data.user);
                     setNotification("Login successful!");
+                    navigate("/immeuble-check");
                 })
-                .catch(() => {
-                    setError("Login failed. Please check your credentials.");
-                    return;
+                .catch((err) => {
+                    if (err.response && err.response.data) {
+                        if (err.response.data.errors) {
+                            setFieldErrors(err.response.data.errors);
+                        } else if (err.response.data.message) {
+                            setFieldErrors({
+                                general: [err.response.data.message],
+                            });
+                        } else {
+                            setFieldErrors({
+                                general: [
+                                    "Login failed. Please check your credentials.",
+                                ],
+                            });
+                        }
+                    } else {
+                        setFieldErrors({
+                            general: [
+                                "Login failed. Please check your credentials.",
+                            ],
+                        });
+                    }
                 });
         } else {
-
             if (formData.password !== formData.confirmPassword) {
-                setError("Passwords do not match.");
+                setFieldErrors({ general: ["Passwords do not match."] });
                 return;
             }
             if (!formData.agreeToTerms) {
-                setError("You must agree to the Terms of Service.");
+                setFieldErrors({
+                    general: ["You must agree to the Terms of Service."],
+                });
                 return;
             }
 
@@ -67,13 +99,32 @@ const Login = () => {
                     setToken(response.data.token);
                     setUser(response.data.user);
                     setNotification("Account created successfully!");
+                    navigate("/immeuble-check");
                 })
-                .catch(() => {
-                    setError("Registration failed. Please check your details.");
-                    return;
+                .catch((err) => {
+                    if (err.response && err.response.data) {
+                        if (err.response.data.errors) {
+                            setFieldErrors(err.response.data.errors);
+                        } else if (err.response.data.message) {
+                            setFieldErrors({
+                                general: [err.response.data.message],
+                            });
+                        } else {
+                            setFieldErrors({
+                                general: [
+                                    "Registration failed. Please check your details.",
+                                ],
+                            });
+                        }
+                    } else {
+                        setFieldErrors({
+                            general: [
+                                "Registration failed. Please check your details.",
+                            ],
+                        });
+                    }
                 });
-        }        
-        navigate("/immeuble-check");
+        }
     };
 
     const resetForm = () => {
@@ -86,7 +137,7 @@ const Login = () => {
             rememberMe: false,
             agreeToTerms: false,
         });
-        setError(null);
+        setFieldErrors({});
     };
 
     const switchMode = (loginMode) => {
@@ -141,7 +192,7 @@ const Login = () => {
                     <div className="flex mb-6 bg-gray-100 rounded-lg p-1">
                         <button
                             onClick={() => switchMode(true)}
-                            className={`flex-1 py-2 px-4 text-sm font-medium rounded-md transition-all duration-200 ${
+                            className={`cursor-pointer flex-1 py-2 px-4 text-sm font-medium rounded-md transition-all duration-200 ${
                                 isLogin
                                     ? "bg-teal-500 text-white shadow-md transform translate-x-0"
                                     : "text-gray-600 hover:text-gray-800"
@@ -151,7 +202,7 @@ const Login = () => {
                         </button>
                         <button
                             onClick={() => switchMode(false)}
-                            className={`flex-1 py-2 px-4 text-sm font-medium rounded-md transition-all duration-200 ${
+                            className={`cursor-pointer flex-1 py-2 px-4 text-sm font-medium rounded-md transition-all duration-200 ${
                                 !isLogin
                                     ? "bg-teal-500 text-white shadow-md transform translate-x-0"
                                     : "text-gray-600 hover:text-gray-800"
@@ -161,8 +212,8 @@ const Login = () => {
                         </button>
                     </div>
 
-                    {/* Error Message */}
-                    {error && (
+                    {/* Unified Error Message */}
+                    {fieldErrors.general && (
                         <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
                             <div className="flex items-center">
                                 <svg
@@ -179,11 +230,16 @@ const Login = () => {
                                     />
                                 </svg>
                                 <span className="text-red-700 text-sm font-medium">
-                                    {error}
+                                    {fieldErrors.general.join(" ")}
                                 </span>
                                 <button
-                                    onClick={() => setError(null)}
-                                    className="ml-auto text-red-500 hover:text-red-700"
+                                    onClick={() =>
+                                        setFieldErrors({
+                                            ...fieldErrors,
+                                            general: undefined,
+                                        })
+                                    }
+                                    className="cursor-pointer ml-auto text-red-500 hover:text-red-700"
                                 >
                                     <svg
                                         className="w-4 h-4"
@@ -221,6 +277,11 @@ const Login = () => {
                                         placeholder="Enter your full name"
                                         required={!isLogin}
                                     />
+                                    {fieldErrors.name && (
+                                        <div className="text-red-600 text-sm mt-1">
+                                            {fieldErrors.name.join(" ")}
+                                        </div>
+                                    )}
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -235,6 +296,11 @@ const Login = () => {
                                         placeholder="Enter your phone number"
                                         required={!isLogin}
                                     />
+                                    {fieldErrors.phone && (
+                                        <div className="text-red-600 text-sm mt-1">
+                                            {fieldErrors.phone.join(" ")}
+                                        </div>
+                                    )}
                                 </div>
                             </>
                         )}
@@ -253,6 +319,11 @@ const Login = () => {
                                 placeholder="Enter your email"
                                 required
                             />
+                            {fieldErrors.email && (
+                                <div className="text-red-600 text-sm mt-1">
+                                    {fieldErrors.email.join(" ")}
+                                </div>
+                            )}
                         </div>
 
                         {/* Password */}
@@ -273,6 +344,11 @@ const Login = () => {
                                 }
                                 required
                             />
+                            {fieldErrors.password && (
+                                <div className="text-red-600 text-sm mt-1">
+                                    {fieldErrors.password.join(" ")}
+                                </div>
+                            )}
                         </div>
 
                         {/* Confirm Password - Register Only */}
@@ -290,6 +366,11 @@ const Login = () => {
                                     placeholder="Confirm your password"
                                     required={!isLogin}
                                 />
+                                {fieldErrors.confirmPassword && (
+                                    <div className="text-red-600 text-sm mt-1">
+                                        {fieldErrors.confirmPassword.join(" ")}
+                                    </div>
+                                )}
                             </div>
                         )}
 
@@ -311,7 +392,7 @@ const Login = () => {
                                     </label>
                                     <button
                                         type="button"
-                                        className="text-sm text-teal-500 hover:text-teal-600 font-medium transition-colors duration-200"
+                                        className="cursor-pointer text-sm text-teal-500 hover:text-teal-600 font-medium transition-colors duration-200"
                                     >
                                         Forgot password?
                                     </button>
@@ -337,7 +418,7 @@ const Login = () => {
                                         and{" "}
                                         <button
                                             type="button"
-                                            className="text-teal-500 hover:text-teal-600 font-medium"
+                                            className="cursor-pointer text-teal-500 hover:text-teal-600 font-medium"
                                         >
                                             Privacy Policy
                                         </button>
@@ -349,7 +430,7 @@ const Login = () => {
                         {/* Submit Button */}
                         <button
                             onClick={handleSubmit}
-                            className="w-full bg-teal-500 text-white py-3 px-4 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl hover:bg-teal-600 border-2 border-teal-500 hover:border-teal-600 transform hover:-translate-y-1"
+                            className="cursor-pointer w-full bg-teal-500 text-white py-3 px-4 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl hover:bg-teal-600 border-2 border-teal-500 hover:border-teal-600 transform hover:-translate-y-1"
                         >
                             {isLogin ? "Login" : "Create Account"}
                         </button>
@@ -358,7 +439,7 @@ const Login = () => {
                             onClick={() => {
                                 navigate(-1);
                             }}
-                            className="w-full bg-red-500 text-white py-3 px-4 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl border-2 border-red-500 hover:border-red-600 transform hover:-translate-y-1 mt-2"
+                            className="cursor-pointer w-full bg-red-500 text-white py-3 px-4 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl border-2 border-red-500 hover:border-red-600 transform hover:-translate-y-1 mt-2"
                         >
                             GO Back
                         </button>
@@ -377,7 +458,7 @@ const Login = () => {
                             </div>
                         </div>
                         <div className="mt-4 grid grid-cols-2 gap-3">
-                            <button className="w-full inline-flex justify-center py-3 px-4 border-2 border-gray-200 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-all duration-200 hover:shadow-md transform hover:-translate-y-1">
+                            <button className="cursor-pointer w-full inline-flex justify-center py-3 px-4 border-2 border-gray-200 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-all duration-200 hover:shadow-md transform hover:-translate-y-1">
                                 <svg className="w-5 h-5" viewBox="0 0 24 24">
                                     <path
                                         fill="currentColor"

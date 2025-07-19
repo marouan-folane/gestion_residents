@@ -120,6 +120,9 @@ const Dashboard = () => {
     }
   };
 
+  if (loading) {
+    return <LoadingSpinner message="Chargement du tableau de bord..." />;
+  }
 
 
   if (error) {
