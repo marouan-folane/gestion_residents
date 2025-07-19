@@ -39,6 +39,74 @@ const Dashboard = () => {
     { name: 'Paiements ce mois', value: '18,450€', icon: Euro, color: 'bg-green-500', change: '+5.2%' },
     { name: 'Charges totales', value: '3,200€', icon: Receipt, color: 'bg-orange-500', change: '-2.1%' },
     { name: 'Plaintes', value: '3', icon: AlertTriangle, color: 'bg-red-500', change: '-1' },
+  const fetchDashboardData = async () => {
+    try {
+      // Fetch all dashboard related data
+      const [
+        apartmentsRes,
+        ownersRes,
+        financesRes,
+        paymentsRes,
+        maintenanceRes,
+        notificationsRes
+      ] = await Promise.all([
+        axiosClient.get("/apartments").catch(() => ({ data: [] })),
+        axiosClient.get("/owners").catch(() => ({ data: [] })),
+        axiosClient.get("/finances").catch(() => ({ data: [] })),
+        axiosClient.get("/payments").catch(() => ({ data: [] })),
+        axiosClient.get("/maintenance").catch(() => ({ data: [] })),
+        axiosClient.get("/notifications").catch(() => ({ data: [] }))
+      ]);
+
+      setDashboardData({
+        apartments: apartmentsRes.data,
+        owners: ownersRes.data,
+        finances: financesRes.data,
+        payments: paymentsRes.data,
+        maintenance: maintenanceRes.data,
+        notifications: notificationsRes.data
+      });
+    } catch (err) {
+      console.error('Error fetching dashboard data:', err);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await axiosClient.post('/logout');
+    } catch (err) {
+      console.error('Logout error:', err);
+    } finally {
+      localStorage.removeItem('ACCESS_TOKEN');
+      window.location.href = "/auth/login";
+    }
+  };
+
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          >
+            Réessayer
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Sidebar menu items
+  const menuItems = [
+    { icon: Home, label: 'Tableau de bord', active: true, color: 'bg-blue-500' },
+    { icon: Building, label: 'Appartements', count: dashboardData.apartments.length, color: 'bg-purple-500' },
+    { icon: Users, label: 'Propriétaires', count: dashboardData.owners.length, color: 'bg-green-500' },
+    { icon: CreditCard, label: 'Finances', count: dashboardData.payments.length, color: 'bg-yellow-500' },
+    { icon: FileText, label: 'Documents', color: 'bg-indigo-500' },
+    { icon: Settings, label: 'Paramètres', color: 'bg-gray-500' },
   ];
 
   const paymentsData = [

@@ -10,16 +10,20 @@ import CheckImmeuble from "./views/CheckImmeuble";
 import CreateImmeuble from "./views/CreateImmeuble"
 import Paiements from "./views/Paiment";
 import Locataires from "./views/Locataire";
+import CreateImmeuble from "./views/CreateImmeuble";
 
 const router = createBrowserRouter([
+
+    {
+        path: "/",
+        element: <SyndicateHomePage />,
+    },
+
     {
         path: "/",
         element: <GuestLayout />,
         children: [
-            {
-                path: "/",
-                element: <SyndicateHomePage />,
-            },
+
             {
                 path: "/auth/login",
                 element: <Login />,
@@ -42,10 +46,6 @@ const router = createBrowserRouter([
             {
                 path: "/immeubleform",
                 element: <CreateImmeuble />,
-            },
-            {
-              path: "/immeuble-check",
-              element: <CheckImmeuble />,
             }
         ],
     },
