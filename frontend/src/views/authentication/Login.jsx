@@ -27,17 +27,7 @@ const Login = () => {
     };
 
     const handleSubmit = () => {
-        if (!isLogin) {
-            if (formData.password !== formData.confirmPassword) {
-                setError("Passwords do not match.");
-                return;
-            }
-            if (!formData.agreeToTerms) {
-                setError("You must agree to the Terms of Service.");
-                return;
-            }
-        }
-
+  
         if (isLogin) {
             axiosClient
                 .post("/login", {
@@ -48,12 +38,22 @@ const Login = () => {
                     setToken(response.data.token);
                     setUser(response.data.user);
                     setNotification("Login successful!");
-                    window.location.href = "/immeubleform";
                 })
                 .catch(() => {
                     setError("Login failed. Please check your credentials.");
+                    return;
                 });
         } else {
+
+            if (formData.password !== formData.confirmPassword) {
+                setError("Passwords do not match.");
+                return;
+            }
+            if (!formData.agreeToTerms) {
+                setError("You must agree to the Terms of Service.");
+                return;
+            }
+
             const payload = {
                 name: formData.fullName,
                 phone: formData.phone,
@@ -67,12 +67,13 @@ const Login = () => {
                     setToken(response.data.token);
                     setUser(response.data.user);
                     setNotification("Account created successfully!");
-                    window.location.href = "/immeubleform";
                 })
                 .catch(() => {
                     setError("Registration failed. Please check your details.");
+                    return;
                 });
-        }
+        }        
+        navigate("/immeuble-check");
     };
 
     const resetForm = () => {

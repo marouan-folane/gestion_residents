@@ -14,7 +14,7 @@ import {
   ArrowRight,
   Menu,
 } from "lucide-react"
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 
 export default function SyndicateLandingPage() {
     const navigate=useNavigate();
@@ -48,9 +48,11 @@ export default function SyndicateLandingPage() {
                 Contact
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
               </a>
-               <a href={navigate('/auth/login')} >
+               <Link to="/auth/login"  
+               className="text-slate-600 hover:text-blue-600 transition-all duration-300 relative group"
+              >
                 Connexion
-              </a>
+              </Link>
             </nav>
 
             <div className="flex items-center space-x-4">

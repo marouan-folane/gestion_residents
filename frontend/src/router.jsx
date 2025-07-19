@@ -6,47 +6,52 @@ import DefaultLayout from "./components/DefaultLayout";
 import GuestLayout from "./components/GuestLayout";
 import Dashboard from "./views/Dashboard";
 import SyndicateHomePage from "./components/Home";
-import ImmeubleCheck from "./views/Immeuble";
+import CreateImmeuble from "./views/CreateImmeuble";
+import CheckImmeuble from "./views/CheckImmeuble";
 
 const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <GuestLayout />,
-    children: [
-      {
+    {
         path: "/",
-        element: <SyndicateHomePage />,
-      },
-      {
-        path: "/auth/login",
-        element: <Login />,
-      },
-      {
-        path: "/auth/register",
-        element: <Register />,
-      },
-    ],
-  },
+        element: <GuestLayout />,
+        children: [
+            {
+                path: "/",
+                element: <SyndicateHomePage />,
+            },
+            {
+                path: "/auth/login",
+                element: <Login />,
+            },
+            {
+                path: "/auth/register",
+                element: <Register />,
+            },
+        ],
+    },
 
-  {
-    path: "/",
-    element: <DefaultLayout />,
-    children: [
-      {
-        path: "/dashboard",
-        element: <Dashboard />,
-      },{
-        path: "/immeubleform",
-        element: <ImmeubleCheck />,
-      }
-
-    ],
-  },{
-
-  },{
-    path: "*",
-    element: <NotFound />,
-  },
+    {
+        path: "/",
+        element: <DefaultLayout />,
+        children: [
+            {
+                path: "/dashboard",
+                element: <Dashboard />,
+            },
+            {
+                path: "/immeubleform",
+                element: <CreateImmeuble />,
+            },
+            {
+              path: "/immeuble-check",
+              element: <CheckImmeuble />,
+            }
+        ],
+    },
+    {},
+    {
+        path: "*",
+        element: <NotFound />,
+    },
 ]);
 
 export default router;
