@@ -7,7 +7,6 @@ import GuestLayout from "./components/GuestLayout";
 import Dashboard from "./views/Dashboard";
 import SyndicateHomePage from "./components/Home";
 import CreateImmeuble from "./views/CreateImmeuble";
-import CheckImmeuble from "./views/CheckImmeuble";
 
 const router = createBrowserRouter([
     
@@ -43,10 +42,6 @@ const router = createBrowserRouter([
             {
                 path: "/immeubleform",
                 element: <CreateImmeuble />,
-            },
-            {
-              path: "/immeuble-check",
-              element: <CheckImmeuble />,
             }
         ],
     },
