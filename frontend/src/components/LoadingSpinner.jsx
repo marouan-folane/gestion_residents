@@ -8,7 +8,6 @@ const LoadingSpinner = ({ message = "Chargement..." }) => {
                     Chargement...
                 </span>
             </div>
-            <span className="text-slate-500">Redirection...</span>
         </div>
     );
 };
