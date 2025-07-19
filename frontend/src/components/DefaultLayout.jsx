@@ -7,8 +7,6 @@ import LoadingSpinner from "./LoadingSpinner";
 
 function DefaultLayout() {
     const { notification, user, token, setUser, setToken } = useStateContext();
-    const [loading, setLoading] = useState(false);
-
     const navigate = useNavigate();
 
     if (!token) {
@@ -17,7 +15,7 @@ function DefaultLayout() {
 
     const check_immeuble = async () => {
         try {
-            setLoading(true);
+            // setLoading(true);
             const response = await axiosClient.get("/immeubles");
 
             if (response.data && response.data.length > 0) {
@@ -28,18 +26,13 @@ function DefaultLayout() {
         } catch (err) {
             console.error("Error checking immeuble:", err.message);
         }
-        finally {
-            setLoading(false);
-        }
+        
     };
 
     useEffect(() => {
         check_immeuble();
-    }, []);
+    }, [token]);
 
-    if (loading) {
-        return <LoadingSpinner message="Chargement..." />;
-    }
 
 
     return (
