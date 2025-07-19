@@ -16,6 +16,28 @@ const CreateImmeuble = () => {
     const [loading, setLoading] = useState(false);
     const [submitting, setSubmitting] = useState(false);
 
+    const check_immeuble = async () => {
+        try {
+
+            setLoading(true);
+            const response = await axiosClient.get("/immeubles");
+
+            if (response.data && response.data.length > 0) {
+                navigate("/dashboard");
+            } 
+        } catch (err) {
+            console.error("Error checking immeuble:", err.message);   
+        }
+        finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        check_immeuble();
+    }, []);
+
+
 
     const handleChange = (e) => {
         setFormData((prev) => ({
@@ -51,6 +73,10 @@ const CreateImmeuble = () => {
             setSubmitting(false);
         }
     };
+
+    if (loading) {
+        return <LoadingSpinner message="Chargement..." />;
+    }
 
     return (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center">
