@@ -59,7 +59,6 @@ class ProprietaireController extends Controller
             ]);
 
             return response()->json($proprietaire, 201);
-
         });
         
     }

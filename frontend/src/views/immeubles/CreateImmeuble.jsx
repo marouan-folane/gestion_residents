@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosClient from "../../axios-client";
-import LoadingSpinner from "../../components/LoadingSpinner";
 import { useStateContext } from "../../contexts/ContextProvider";
 
 const CreateImmeuble = () => {

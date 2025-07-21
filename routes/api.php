@@ -25,7 +25,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/immeubles', [ImmeubleController::class, 'index']);
     Route::post('/immeubles', [ImmeubleController::class, 'store']);
-    Route::post('/logout',[AuthController::class,"logout"]);
     
 
     // Logout route
