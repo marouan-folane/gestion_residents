@@ -21,7 +21,6 @@ const Login = () => {
     const [buttonLoading, setButtonLoading] = useState(false);
     const navigate = useNavigate();
 
-
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
         setFormData((prev) => ({

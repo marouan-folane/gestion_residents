@@ -6,9 +6,22 @@ import {
     BookOpen,
     Menu,
 } from "lucide-react";
+import { useStateContext } from "../../contexts/ContextProvider";
+import axiosClient from "../../axios-client";
 
 function Header({ setSidebarOpen }) {
+
+    const { setUser, setToken } = useStateContext();
     const [openDropdowns, setOpenDropdowns] = useState({});
+
+    
+    const onLogout = (ev) => {
+        ev.preventDefault();
+        axiosClient.post("/logout").then(() => {
+            setUser({});
+            setToken(null);
+        });
+    };
 
     return (
         <header className="bg-white border-b border-gray-200 px-4 sm:px-6 lg:px-8 py-4">
@@ -33,17 +46,17 @@ function Header({ setSidebarOpen }) {
                 </div>
 
                 <div className="flex items-center space-x-2 sm:space-x-4">
-                    <button className="p-2 hover:bg-gray-100 rounded-lg hidden sm:block">
+                    <button className="cursor-pointer p-2 hover:bg-gray-100 rounded-lg hidden sm:block">
                         <Sun className="w-5 h-5 text-gray-600" />
                     </button>
-                    <button className="p-2 hover:bg-gray-100 rounded-lg">
+                    <button className="cursor-pointer p-2 hover:bg-gray-100 rounded-lg">
                         <Bell className="w-5 h-5 text-gray-600" />
                     </button>
-                    <button className="p-2 hover:bg-gray-100 rounded-lg hidden sm:block">
+                    <button className="cursor-pointer p-2 hover:bg-gray-100 rounded-lg hidden sm:block">
                         <BookOpen className="w-5 h-5 text-gray-600" />
                     </button>
-                    <button className="px-3 sm:px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg font-medium text-sm">
-                        Login
+                    <button type="submit" onClick={onLogout} className="cursor-pointer px-3 sm:px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg font-medium text-sm">
+                        Logout
                     </button>
                 </div>
             </div>

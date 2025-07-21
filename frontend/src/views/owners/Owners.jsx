@@ -1,11 +1,10 @@
 
 
-import React from 'react'
 
 function Owners() {
   return (
-    <div>Owners</div>
+    <div>Owners Hi</div>
   )
 }
 
-export default Owners
+export default Owners;

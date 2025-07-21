@@ -2,9 +2,13 @@ import React, { useState } from "react";
 import Header from "./Header";
 import MenuItems from "./MenuItems";
 import { Outlet } from "react-router-dom";
+import { useStateContext } from "../../contexts/ContextProvider";
 
 const Dashboard = () => {
+
+    
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    
 
     return (
         <div className="min-h-screen bg-gray-50 flex">

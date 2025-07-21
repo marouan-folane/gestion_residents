@@ -8,6 +8,8 @@ import Dashboard from "./views/dashboard/Dashboard";
 import CreateImmeuble from "./views/immeubles/CreateImmeuble";
 import Owners from "./views/owners/Owners";
 
+// const {user}=  useStateContext();
+
 const router = createBrowserRouter([
   {
     // ROOT: could be used for global providers, errorElement, etc.
