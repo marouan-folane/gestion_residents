@@ -5,7 +5,7 @@ import axiosClient from "../axios-client";
 import Loading from "../assets/Loading";
 
 function DefaultLayout() {
-    const { notification, user, token, setUser, setToken } = useStateContext();
+    const {token } = useStateContext();
     const [checkingImmeuble, setCheckingImmeuble] = useState(true);
     const navigate = useNavigate(); // <-- move this above any return
 
