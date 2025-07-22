@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Proprietaire;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class ProprietaireController extends Controller
@@ -11,7 +12,14 @@ class ProprietaireController extends Controller
      */
     public function index()
     {
-        $proprietaires =  Proprietaire::all();
+        // User ID => Syndic ID => Immeuble ID => Propriétaires
+        $usr      = auth()->user();
+        $immeuble = $usr->syndic->immeuble;
+        if (! $immeuble) {
+            return response()->json(['message' => 'Immeuble not found'], 404);
+        }
+        // Fetch all proprietaires for the authenticated user's immeuble
+        $proprietaires = $immeuble->proprietaires;
         return response()->json($proprietaires);
     }
 
@@ -20,20 +28,39 @@ class ProprietaireController extends Controller
      */
     public function store(Request $request)
     {
-        $usr = auth()->user();
-        $immeuble = $usr->syndic->immeuble;
-
         $validated = $request->validate([
+            'name'               => 'required|string|max:255',
+            'email'              => 'required|email|unique:users,email',
+            'password'           => 'required|string|min:8',
             'phone'              => 'required|string|unique:proprietaires,phone',
             'etage'              => 'required|integer',
             'numero_appartement' => 'required|integer',
         ]);
 
-        $validated['immeuble_id'] = $immeuble->id;
-        $validated['user_id']     = $usr->id;
+        return \DB::transaction(function () use ($validated) {
 
-        $proprietaire = Proprietaire::create($validated);
-        return response()->json($proprietaire, 201);
+            $user = User::create([
+                'name'     => $validated['name'],
+                'email'    => $validated['email'],
+                'password' => bcrypt($validated['password']),
+                'role'     => 'proprietaire',
+            ]);
+
+            // Get The immeuble of the the proprietaire from the immeuble of the syndic
+            $authUser = auth()->user();
+            $immeuble = $authUser->syndic->immeuble;
+
+            $proprietaire = Proprietaire::create([
+                'user_id'            => $user->id,
+                'phone'              => $validated['phone'],
+                'etage'              => $validated['etage'],
+                'numero_appartement' => $validated['numero_appartement'],
+                'immeuble_id'        => $immeuble->id,
+            ]);
+
+            return response()->json($proprietaire, 201);
+        });
+        
     }
 
     /**
@@ -44,7 +71,6 @@ class ProprietaireController extends Controller
         $proprietaire = Proprietaire::findOrFail($id);
         return response()->json($proprietaire);
     }
-
 
     /**
      * Update the specified resource in storage.
